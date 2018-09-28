@@ -154,7 +154,7 @@ public class TieBa  {
                 ", describe='" + describe + '\'' +
                 ", imglist=" + imglist +
                 ", videoList=" + videoList +
-                ", time=" + getTime() +
+                ", time=" + getTime()    +
                 ", tags=" + tags +
                 '}';
     }

@@ -1,7 +1,6 @@
 package me.nvliu.management.job.pipeline;
 
 import me.nvliu.management.entity.TieBa;
-import me.nvliu.management.entity.YuBa;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
@@ -27,7 +26,7 @@ public class TieBaPipeline implements Pipeline {
     public void process(ResultItems resultItems, Task task) {
         TieBa tieba ;
         for (Map.Entry<String, Object> entry : resultItems.getAll().entrySet()) {
-            if (entry.getKey().contains("Y_")) {
+            if (entry.getKey().contains("T_")) {
                 tieba=(TieBa) entry.getValue();
                 log.info("data = [" + tieba + "]");
 //                re = blogRepository.findById(newBlog.getId());

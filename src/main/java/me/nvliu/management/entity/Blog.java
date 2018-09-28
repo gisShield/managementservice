@@ -61,6 +61,15 @@ public class Blog {
     private List<String> blogTags;
 
     /**
+     * 是否被封禁
+     */
+    private String isBlock;
+    /**
+     * 是否违规
+     */
+    private String isIllegal;
+
+    /**
      * 转发的原微博主键
      */
     private String blogSourceId;
@@ -92,11 +101,6 @@ public class Blog {
      * 原微博视频
      */
     private String blogVideoSource;
-
-    /**
-     * 原微博标签
-     */
-    private List<String> blogSourceTags;
 
     public Blog() {
     }
@@ -253,12 +257,20 @@ public class Blog {
         this.blogVideoSource = blogVideoSource;
     }
 
-    public List<String> getBlogSourceTags() {
-        return blogSourceTags;
+    public String isBlock() {
+        return isBlock;
     }
 
-    public void setBlogSourceTags(List<String> blogSourceTags) {
-        this.blogSourceTags = blogSourceTags;
+    public void setBlock(String block) {
+        isBlock = block;
+    }
+
+    public String isIllegal() {
+        return isIllegal;
+    }
+
+    public void setIllegal(String illegal) {
+        isIllegal = illegal;
     }
 
     @Override
@@ -274,6 +286,8 @@ public class Blog {
                 ", blogVideoImages='" + blogVideoImages + '\'' +
                 ", blogVideo='" + blogVideo + '\'' +
                 ", blogTags=" + blogTags +
+                ", isBlock=" + isBlock +
+                ", isIllegal=" + isIllegal +
                 ", blogSourceId='" + blogSourceId + '\'' +
                 ", blogSourceTime=" + getBlogSourceTime() +
                 ", blogSourceText='" + blogSourceText + '\'' +
@@ -282,7 +296,6 @@ public class Blog {
                 ", blogSourceImages=" + blogSourceImages +
                 ", blogVideoSourceImages='" + blogVideoSourceImages + '\'' +
                 ", blogVideoSource='" + blogVideoSource + '\'' +
-                ", blogSourceTags=" + blogSourceTags +
                 '}';
     }
 }
