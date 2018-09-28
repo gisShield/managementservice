@@ -1,5 +1,6 @@
 package me.nvliu.management.utils;
 
+import java.net.URLDecoder;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -91,17 +92,35 @@ public class SHA {
      * @param bytes 字节数组  
      * @return 十六进制字符串  
      */    
-    private static String byteArrayToHexString(byte[] bytes) {    
+    public static String byteArrayToHexString(byte[] bytes) {
         StringBuffer sb = new StringBuffer();    
         for (int i = 0; i < bytes.length; i++) {    
             sb.append(byteToHexString(bytes[i]));    
         }    
         return sb.toString();    
-    } 
-    
+    }
+    public static String bytesToHex(byte[] bytes) {      StringBuffer sb = new StringBuffer();      for(int i = 0; i < bytes.length; i++) {          String hex = Integer.toHexString(bytes[i] & 0xFF);          if(hex.length() < 2){              sb.append(0);          }          sb.append(hex);      }      return sb.toString();  }
+
     public static void main(String[] args) throws Exception {
-		System.out.println(SHA.encryptSHA("admin", "SHA-1"));
+		/*System.out.println(SHA.encryptSHA("admin", "SHA-1"));
 		System.out.println(SHA.encryptSHA("admin", "SHA"));
-		System.out.println(SHA.encryptSHA("admin"));
-	}
+		System.out.println(SHA.encryptSHA("admin"));*/
+
+		String url = "https://login.sina.com.cn/crossdomain2.php?action=login&entry=weibo&r=https%3A%2F%2Fpassport.weibo.com%2Fwbsso%2Flogin%3Fssosavestate%3D1569676543%26url%3Dhttps%253A%252F%252Fweibo.com%252Fajaxlogin.php%253Fframelogin%253D1%2526callback%253Dparent.sinaSSOController.feedBackUrlCallBack%26display%3D0%26ticket%3DST-NTUyMDIwNTcwMw%3D%3D-1538140543-yf-F7A39D7941A11C68261CA68F34FF4562-1%26retcode%3D0&login_time=1538140543&sign=f6148c794d347449&sr=1920%2A1080";
+        url = URLDecoder.decode(url,"utf-8");
+		System.out.println(url);
+        /*String [] urls= url.split("https");
+        StringBuffer stringBuffer = new StringBuffer();
+		for(String u:urls){
+		    String str = URLDecoder.decode("https"+u,"utf-8");
+            System.out.println("u = [" + str + "]");
+            stringBuffer.append(str);
+        }
+        System.out.println(stringBuffer.toString());*/
+        System.out.println(url.substring(0,url.lastIndexOf("https")-5));
+
+        /*String str = "https%253A%252F%252Fweibo.com%252Fajaxlogin.php%253Fframelogin%253D1%2526callback%253Dparent.sinaSSOController.feedBackUrlCallBack%26display%3D0%26ticket%3DST-NTUyMDIwNTcwMw%3D%3D-1538140543-yf-F7A39D7941A11C68261CA68F34FF4562-1%26retcode%3D0&login_time=1538140543&sign=f6148c794d347449&sr=1920%2A1080";
+        System.out.println("u = [" + URLDecoder.decode(str,"utf-8") + "]");*/
+
+    }
 }
