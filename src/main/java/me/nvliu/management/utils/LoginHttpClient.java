@@ -1,6 +1,5 @@
 package me.nvliu.management.utils;
 
-import me.nvliu.management.constants.UtilConstants;
 import org.apache.http.*;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.CookieStore;
@@ -20,9 +19,9 @@ import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 /**
  * @Author:mvp
@@ -33,7 +32,7 @@ import java.util.Random;
  * @Modified By:
  */
 public class LoginHttpClient {
-    private final static Logger LOG = LoggerFactory.getLogger(TagUtils.class);
+    private final static Logger LOG = LoggerFactory.getLogger(LoginHttpClient.class);
     /** 请求网站的编码，这个地方，我默认 写的是GB3212*/
     private static final String DEFALUT_ENCODE = "UTF-8";
 
@@ -41,6 +40,7 @@ public class LoginHttpClient {
     public static HttpClientContext context = null;
     public static CookieStore cookieStore = null;
     public static RequestConfig requestConfig = null;
+    public static String agent = null;
 
     static {
         init();
@@ -56,7 +56,9 @@ public class LoginHttpClient {
         httpClient = HttpClientBuilder.create().setKeepAliveStrategy(new DefaultConnectionKeepAliveStrategy())
                 .setRedirectStrategy(new DefaultRedirectStrategy()).setDefaultRequestConfig(requestConfig)
                 .setDefaultCookieStore(cookieStore).build();
+        agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36";
     }
+
 
     /**
      * 发送get请求
@@ -68,8 +70,8 @@ public class LoginHttpClient {
      */
     public static String get(String url)  {
         HttpGet httpget = new HttpGet(url);
-        Random rand = new Random();
-        httpget.setHeader("User-Agent", UtilConstants.USERAGENT_LIST[rand.nextInt(35)]);
+        httpget.setHeader("User-Agent", agent);
+
         CloseableHttpResponse response = null;
         try {
             //设定请求的参数
@@ -151,8 +153,9 @@ public class LoginHttpClient {
      */
     public static String post(String url, Map<String,Object> parameters){
         HttpPost httpPost = new HttpPost(url);
-        Random rand = new Random();
-        httpPost.setHeader("User-Agent", UtilConstants.USERAGENT_LIST[rand.nextInt(35)]);
+        httpPost.setHeader("User-Agent", agent);
+        httpPost.setHeader("X-Requested-With","XMLHttpRequest");
+        httpPost.setHeader("Content-Type","application/x-www-form-urlencoded; charset=UTF-8");
         CloseableHttpResponse response = null;
         try {
             //设定请求的参数
@@ -225,10 +228,21 @@ public class LoginHttpClient {
      * @param domain
      * @param path
      */
-    public void addCookie(String name, String value, String domain, String path) {
+    public static void addCookie(String name, String value, String domain, String path) {
         BasicClientCookie cookie = new BasicClientCookie(name, value);
         cookie.setDomain(domain);
         cookie.setPath(path);
+        cookieStore.addCookie(cookie);
+    }
+    public static void addCookie(String name, String value, String domain, String path, Date date) {
+        BasicClientCookie cookie = new BasicClientCookie(name, value);
+        cookie.setDomain(domain);
+        cookie.setPath(path);
+        cookie.setExpiryDate(date);
+        cookieStore.addCookie(cookie);
+    }
+    public static void addCookie(String name, String value) {
+        BasicClientCookie cookie = new BasicClientCookie(name, value);
         cookieStore.addCookie(cookie);
     }
 
@@ -259,7 +273,7 @@ public class LoginHttpClient {
         cookieStore = context.getCookieStore();
         List<Cookie> cookies = cookieStore.getCookies();
         for (Cookie cookie : cookies) {
-            System.out.println("key:" + cookie.getName() + "  value:" + cookie.getValue());
+            System.out.println("key:" + cookie.getName() + "  value:" + cookie.getValue()+ "  domain:" + cookie.getDomain());
         }
     }
 
@@ -280,6 +294,38 @@ public class LoginHttpClient {
             }
         }
         return res;
+    }
+    public static String getCookieValue(String key) {
+        cookieStore = context.getCookieStore();
+        List<Cookie> cookies = cookieStore.getCookies();
+        String res = "";
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals(key)) {
+                res = cookie.getValue();
+                break;
+            }
+        }
+        return res;
+    }
+    public static String appendCookie(String key,String value) {
+        cookieStore = context.getCookieStore();
+        List<Cookie> cookies = cookieStore.getCookies();
+        String oldValue = "";
+        String path = "";
+        String domain = "";
+        Date expiry = null;
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals(key)) {
+                oldValue = cookie.getValue();
+                path = cookie.getPath();
+                domain = cookie.getDomain();
+                expiry = cookie.getExpiryDate();
+                cookies.remove(cookie);
+            }
+        }
+        addCookie(key,oldValue+value,domain,path,expiry);
+        return oldValue+value;
+
     }
 
     /**

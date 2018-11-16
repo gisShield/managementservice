@@ -24,4 +24,17 @@ public interface BlogService {
      * @return
      */
     HashMap<String,Object> findBlogByPage(Map<String,String> map);
+
+    /**
+     * 获取被封禁的微博分页
+     * @param map
+     * @return
+     */
+    HashMap<String,Object> findBlockBlogByPage(Map<String,String> map);
+
+    HashMap<String,Object> preLoginBlog(Map<String,String> map);
+    HashMap<String,Object> getBlogPin(Map<String,String> map);
+    HashMap<String,Object> loginBlog(Map<String,String> map);
+
+
 }

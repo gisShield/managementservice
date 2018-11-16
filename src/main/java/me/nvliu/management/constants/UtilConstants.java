@@ -52,6 +52,20 @@ public final class UtilConstants {
             "Mozilla/5.0 (Macintosh; U; PPC Mac OS X 10.5; en-US; rv:1.9.2.15) Gecko/20110303 Firefox/3.6.15",
             "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.6; rv:2.0.1) Gecko/20100101 Firefox/4.0.1"
     };
+    public final static String MSG_SAVE_S="保存成功！";
+    public final static String MSG_EDIT_S="修改成功！";
+    public final static String MSG_DEL_S="删除成功！";
+    public final static String MSG_QUERY_S="查询成功！";
+    public final static String MSG_QUERY_F="查询失败！";
+    public final static String MSG_FAILED_PARAM="信息填写不完整！";
+    public final static String MSG_FAILED_INFO="详细信息查询失败！";
+    public final static String MSG_DATABASEERR="数据库操作异常！";
+    public final static String MSG_NOLOGIN="用户未登录或登录已过期！";
+    public final static String MSG_AUTHORIZATION_S="认证签名生成成功";
+    public final static String MSG_AUTHORIZATION_F="认证签名生成失败";
+    public final static String CODE_FAILED="failed";
+    public final static String CODE_SUCCESS="succeed";
+
 
 
 }

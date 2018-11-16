@@ -1,5 +1,6 @@
 package me.nvliu.management.utils;
 
+import java.util.Map;
 import java.util.Random;
 
 /**
@@ -98,7 +99,11 @@ public class Tools {
 		return null;
 	}
 	public static boolean notEmpty(Object s) {
+
 		return s != null && !"".equals(s) && !"null".equals(s);
+	}
+	public static boolean notEmpty(Map s,Object key) {
+		return s!= null && s.containsKey(key) && notEmpty(s.get(key));
 	}
 
 	public static void main(String[] args) {

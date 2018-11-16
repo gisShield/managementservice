@@ -2,10 +2,7 @@ package me.nvliu.management.api;
 
 import me.nvliu.management.service.BlogService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -19,6 +16,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping(value = "/api/blog")
+@CrossOrigin
 public class BolgApi {
     @Autowired
     private BlogService blogService;
@@ -31,6 +29,39 @@ public class BolgApi {
     public Object findBlog(@RequestParam(value = "blogId", required = true) String blogId) {
         return blogService.findBlogById(blogId);
     }
+    @RequestMapping(value = "/block", method = RequestMethod.GET)
+    public Object findBlockBlog(@RequestParam Map map) {
+        return blogService.findBlockBlogByPage(map);
+    }
 
+    /**
+     * 获取登录前提参数
+     * @param map
+     * @return
+     */
+    @RequestMapping(value = "/preLogin", method = RequestMethod.POST)
+    public Object preLoginBlog(@RequestParam Map map) {
+        return blogService.preLoginBlog(map);
+    }
+
+    /**
+     * 获取验证码
+     * @param map
+     * @return
+     */
+    @RequestMapping(value = "/getLoginPin", method = RequestMethod.GET)
+    public Object getLoginPin(@RequestParam Map map) {
+        return blogService.getBlogPin(map);
+    }
+
+    /**
+     * 登录微博保存cookie
+     * @param map
+     * @return
+     */
+    @RequestMapping(value = "/login", method = RequestMethod.POST)
+    public Object loginBolg(@RequestParam Map map) {
+        return blogService.loginBlog(map);
+    }
 }
 

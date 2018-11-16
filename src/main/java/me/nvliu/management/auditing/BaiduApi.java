@@ -121,15 +121,15 @@ public class BaiduApi {
             // orc文字识别
             scenes.add("ocr");
             //政治敏感识别
-            scenes.add("politician");
+            //scenes.add("politician");
             //色情识别
             scenes.add("antiporn");
             //暴恐识别
-            scenes.add("terror");
+            //scenes.add("terror");
             //恶心图像识别
-            scenes.add("disgust");
+            //scenes.add("disgust");
             //广告检测
-            scenes.add("watermark");
+            //scenes.add("watermark");
 
 
             String imageUrl = url;
@@ -176,7 +176,8 @@ public class BaiduApi {
 
     public static void main(String[] args) {
         BaiduApi baiduApi = new BaiduApi();
-         baiduApi.getAuditing("https://wx1.sinaimg.cn/orj360/00718Wh6gy1fvofdenzjqj30a909ydgk.jpg");
+         //baiduApi.getAuditing("https://wx1.sinaimg.cn/orj360/00718Wh6gy1fvofdenzjqj30a909ydgk.jpg");
+                baiduApi.getTextAuditing("交友恋爱，走心走肾...让身体和灵魂不再孤单哦");
     }
 
 }

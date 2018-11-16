@@ -51,4 +51,23 @@ public interface BlogRepository extends MongoRepository<Blog,String> {
      * @return
      */
     Page<Blog> findAllByBlogTimeBetween(Date timeBegin,Date timeEnd,Pageable pageable);
+
+    /**
+     * 获取指定时间内封禁微博分页
+     * @param isBlock 是否封禁
+     * @param timeBegin 开始时间
+     * @param timeEnd 结束时间
+     * @param pageable 分页
+     * @return
+     */
+    Page<Blog> findAllByIsBlockAndBlogTimeBetween(String isBlock,Date timeBegin,Date timeEnd,Pageable pageable);
+
+    /**
+     * 获取所有封禁的微博分页
+     * @param isBlock 是否封禁
+     * @param pageable 分页
+     * @return
+     */
+    Page<Blog> findAllByIsBlock(String isBlock,Pageable pageable);
+
 }
