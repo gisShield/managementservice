@@ -10,6 +10,7 @@ import com.gexin.rp.sdk.http.IGtPush;
 import com.gexin.rp.sdk.template.LinkTemplate;
 import com.gexin.rp.sdk.template.NotificationTemplate;
 import com.gexin.rp.sdk.template.style.Style0;
+import me.nvliu.management.constants.ConfigConstants;
 import me.nvliu.management.entity.User;
 
 import java.util.ArrayList;
@@ -24,9 +25,9 @@ import java.util.List;
  * @Modified By:
  */
 public class AppPush {
-    private static String appId = "xxx";
-    private static String appKey = "xxx";
-    private static String masterSecret = "xxx";
+    private static String appId = ConfigConstants.APP_PUSH_ID;
+    private static String appKey = ConfigConstants.APP_PUSH_KEY;
+    private static String masterSecret = ConfigConstants.APP_PUSH_SECRET;
     private static String url = "http://sdk.open.api.igexin.com/apiex.htm";
 
     public static void pushtoSingle(User user,LinkTemplate template){
@@ -155,6 +156,5 @@ public class AppPush {
     }
 
     public static void main(String[] args) {
-
     }
 }

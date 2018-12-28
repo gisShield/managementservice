@@ -1,12 +1,15 @@
 package me.nvliu.management.job.pipeline;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import me.nvliu.management.auditing.BaiduApi;
+import me.nvliu.management.auditing.BlogLogin;
 import me.nvliu.management.constants.ConfigConstants;
 import me.nvliu.management.entity.Blog;
 import me.nvliu.management.repository.BlogRepository;
 import me.nvliu.management.utils.TagUtils;
 import me.nvliu.management.utils.Tools;
+import me.nvliu.management.utils.sensi.SensitiveFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,8 +38,19 @@ public class BlogPipeline implements Pipeline {
 
     private BaiduApi baiduApi;
 
+    private BlogLogin blogLogin;
+
+    /**
+     * 设置过滤的微博 搞事部，月野兔
+     */
+    private List<String> filterUser = ConfigConstants.WHITE_USER_LIST;
+
     public void setBaiduApi(BaiduApi baiduApi) {
         this.baiduApi = baiduApi;
+    }
+
+    public void setBlogLogin(BlogLogin blogLogin) {
+        this.blogLogin = blogLogin;
     }
 
     @Override
@@ -50,40 +64,48 @@ public class BlogPipeline implements Pipeline {
                 if(Tools.notEmpty(blog)){
                     // 已经存在的数据
                     if(Tools.isEmpty(blog.isIllegal())){
-                        blog.setBlogTags(TagUtils.setTags(blog, baiduApi));
-                        String res = pushMessage(blog);
-                        if ("error".equals(res)) {
+                        // 已经审核过
+                        if(blog.getBlogTags()!= null && blog.getBlogTags().size()>0){
 
-                        } else if (Tools.notEmpty(res)) {
-                            blog.setIllegal("T");
-                            // 执行封禁操作
-//                        newBlog.setBlock("T");
-                        } else {
-                            blog.setIllegal("F");
+                        }else{
+                            // 未审核
+                            blog.setBlogTags(TagUtils.setTags(blog, baiduApi));
                         }
-                        blogRepository.save(blog);
+                        // 对审核结果进行解析
+                        blockBlog(blog);
                     }
                 }else{
-                    //该微博不存在
-                    newBlog.setBlogTags(TagUtils.setTags(newBlog, baiduApi));
-                    String res = pushMessage(newBlog);
-                    if ("error".equals(res)) {
-
-                    } else if (Tools.notEmpty(res)) {
-                        newBlog.setIllegal("T");
-                        // 执行封禁操作
-//                        newBlog.setBlock("T");
-                    } else {
+                    //该微博不存在，为新微博
+                    // 判断是否在过滤名单内，在的话直接保存
+                    if(filterUser.contains(newBlog.getBlogUserId())){
                         newBlog.setIllegal("F");
+                        blogRepository.save(newBlog);
+                    }else {
+                        //不在过滤名单执行审核保存
+                        newBlog.setBlogTags(TagUtils.setTags(newBlog, baiduApi));
+                        blockBlog(newBlog);
                     }
-                    blogRepository.save(newBlog);
                 }
             }
         }
 
     }
 
+    private void blockBlog(Blog blog){
+        String res = pushMessage(blog);
+        if ("error".equals(res)) {
 
+        } else if (Tools.notEmpty(res)) {
+            // 执行封禁操作
+            JSONObject jsonObject = JSON.parseObject(blogLogin.blockBlog(blog.getBlogId()));
+            if(jsonObject.getIntValue("code") == 100000){
+                blog.setIllegal("T");
+            }
+        } else {
+            blog.setIllegal("F");
+        }
+        blogRepository.save(blog);
+    }
     private String pushMessage(Blog blog) {
         List<String> res = blog.getBlogTags();
         StringBuffer stringBuffer = new StringBuffer();
@@ -94,7 +116,9 @@ public class BlogPipeline implements Pipeline {
                     if (jsonObject.containsKey("error_code")) {
                         return "error";
                     } else {
-                        if (jsonObject.containsKey("spam") && jsonObject.getIntValue("spam") > 0) {
+                        // spam 1表示违禁
+                        // 2 需要人工审核
+                        if (jsonObject.containsKey("spam") && jsonObject.getIntValue("spam") ==  1) {
                             stringBuffer.append(ConfigConstants.TYPECODE_SPAM).append(",");
                         } else {
                             if (jsonObject.containsKey("politician") && Tools.notEmpty(jsonObject.get("politician"))) {
@@ -112,7 +136,6 @@ public class BlogPipeline implements Pipeline {
                             if (jsonObject.containsKey("watermark") && Tools.notEmpty(jsonObject.getString("watermark"))) {
                                 stringBuffer.append(ConfigConstants.TYPECODE_WATERMARK).append(",");
                             }
-
                         }
                     }
                 }
@@ -123,7 +146,29 @@ public class BlogPipeline implements Pipeline {
             //TODO 执行封禁操作
             return stringBuffer.toString();
         } else {
-            return null;
+            // 执行文本过滤判断
+            String filter = filter(blog);
+            return filter;
         }
+    }
+
+    /**
+     * 过滤自定义关键词
+     * @param blog
+     * @return
+     */
+    private String filter(Blog blog){
+        SensitiveFilter filter = SensitiveFilter.DEFAULT;
+        String filted = null;
+        String sentence = filter.delSpaceAndLineTag(blog.getBlogText().toLowerCase());
+        if(sentence.contains("+") || sentence.contains("+")){
+            String temp = filter.hasSensi(sentence, '*');
+            if(temp != null){
+                return temp;
+            }
+        }
+        sentence= filter.delAllSymbol(sentence);
+        filted = filter.hasSensi(sentence, '*');
+        return filted;
     }
 }

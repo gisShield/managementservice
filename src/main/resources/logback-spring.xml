@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration scan="true">
   <!--定义日志文件的存储地址 勿在 LogBack 的配置中使用相对路径 生产环境-->
-  <property name="LOG_NAME" value="/webapps/java/prod/homepage"></property>
+  <property name="LOG_NAME" value="/apps/java/managementservice/prod"></property>
   <!--定义日志文件的存储地址 勿在 LogBack 的配置中使用相对路径  测试环境-->
-  <property name="TEST_LOG_NAME" value="/webapps/java/test/homepage"></property>
+  <property name="TEST_LOG_NAME" value="/apps/java/managementservice/test"></property>
   <!-- %m输出的信息,%p日志级别,%t线程名,%d日期,%c类的全名,,,, -->
   <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
     <encoder>

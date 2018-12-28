@@ -1,5 +1,8 @@
 package me.nvliu.management.constants;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @Author:mvp
  * @ProjectName: management
@@ -9,11 +12,19 @@ package me.nvliu.management.constants;
  * @Modified By:
  */
 public final class ConfigConstants {
-    public static final String B_AK = "xxx";
-    public  static final String B_SK = "xxx" ;
+    public static final String B_AK = "xx";
+    public  static final String B_SK = "xx" ;
     public   static final String B_TOKENURL = "https://aip.baidubce.com/oauth/2.0/token?";
     public  static final String B_IMAGEURL = "https://aip.baidubce.com/api/v1/solution/direct/img_censor";
     public   static final String B_TEXTURL = "https://aip.baidubce.com/rest/2.0/antispam/v2/spam";
+    public static final String B_USERNAME = "xx";
+    public static final String B_PASSWORD = "xx";
+    public static final String TOPIC_ID = "xx";
+    public static final String APP_PUSH_ID = "xx";
+    public static final String APP_PUSH_KEY = "xx";
+    public static final String APP_PUSH_SECRET = "xx";
+    public static final List<String> WHITE_USER_LIST = new ArrayList<String>(){{add("xx"); add("xx");}};
+
     /**
      * 政治敏感
      */
