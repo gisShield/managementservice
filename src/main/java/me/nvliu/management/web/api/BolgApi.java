@@ -1,4 +1,4 @@
-package me.nvliu.management.api;
+package me.nvliu.management.web.api;
 
 import me.nvliu.management.service.BlogService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +9,7 @@ import java.util.Map;
 /**
  * @Author:mvp
  * @ProjectName: management
- * @PacketName: me.nvliu.management.api
+ * @PacketName: me.nvliu.management.web.api
  * @Description:
  * @Date: Create in 14:39 2018/9/27
  * @Modified By:

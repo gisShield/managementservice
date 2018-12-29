@@ -20,11 +20,7 @@ public final class ConfigConstants {
     public static final String B_USERNAME = "xx";
     public static final String B_PASSWORD = "xx";
     public static final String TOPIC_ID = "xx";
-    public static final String APP_PUSH_ID = "xx";
-    public static final String APP_PUSH_KEY = "xx";
-    public static final String APP_PUSH_SECRET = "xx";
     public static final List<String> WHITE_USER_LIST = new ArrayList<String>(){{add("xx"); add("xx");}};
-
     /**
      * 政治敏感
      */

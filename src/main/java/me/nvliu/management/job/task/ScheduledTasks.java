@@ -61,7 +61,7 @@ public class ScheduledTasks {
     protected static Logger log = LoggerFactory.getLogger(ScheduledTasks.class);
 
 
-    @Scheduled(cron = "${time.cron.blog}")
+    /*@Scheduled(cron = "${time.cron.blog}")
     public void getBlogInfo(){
         log.info("微博  数据抓取开始");
         blogPipeline.setBaiduApi(baiduApi);
@@ -84,7 +84,7 @@ public class ScheduledTasks {
         log.info("==============更改授权==================");
         baiduApi.changeToken();
         baiduApi.getTokin();
-    }
+    }*/
 
     /*@Scheduled(cron = "${time.cron.yuba}")
     public void getYuBaInfo(){
