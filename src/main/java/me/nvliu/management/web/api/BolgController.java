@@ -17,7 +17,7 @@ import java.util.Map;
 @RestController
 @RequestMapping(value = "/api/blog")
 @CrossOrigin
-public class BolgApi {
+public class BolgController {
     @Autowired
     private BlogService blogService;
 

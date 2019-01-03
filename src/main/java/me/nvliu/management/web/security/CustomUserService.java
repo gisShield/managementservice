@@ -1,10 +1,13 @@
 package me.nvliu.management.web.security;
 
+import me.nvliu.management.web.dao.MenuMapper;
 import me.nvliu.management.web.dao.UserMapper;
+import me.nvliu.management.web.entity.Menu;
 import me.nvliu.management.web.entity.Role;
 import me.nvliu.management.web.entity.User;
 import me.nvliu.management.web.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -20,21 +23,26 @@ public class CustomUserService implements UserDetailsService {
     @Autowired
     private UserMapper userMapper;
 
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    @Autowired
+    private MenuMapper menuMapper;
 
-        User user = userMapper.selectByPrimaryKey(0);
-        if(user == null){
-            throw new UsernameNotFoundException("用户名不存在");
+    @Override
+    public UserDetails loadUserByUsername(String username) {
+
+        User user = userMapper.findByUserName(username);
+        if (user != null) {
+            List<Menu> permissions = menuMapper.getByUserId(user.getId());
+            List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
+            for (Menu permission : permissions) {
+                if (permission != null && permission.getName()!=null) {
+                    GrantedAuthority grantedAuthority = new UrlGrantedAuthority(permission.getUrl());
+                    grantedAuthorities.add(grantedAuthority);
+                }
+            }
+            user.setAuthorities(grantedAuthorities);
+            return user;
+        } else {
+            throw new UsernameNotFoundException("admin: " + username + " do not exist!");
         }
-        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-        //用于添加用户的权限。只要把用户权限添加到authorities 就万事大吉。
-        for(Role role:user.getRoles())
-        {
-            authorities.add(new SimpleGrantedAuthority(role.getRoleName()));
-            System.out.println(role.getRoleName());
-        }
-        return new org.springframework.security.core.userdetails.User(user.getUserName(),
-                user.getPassword(), authorities);
     }
 }
