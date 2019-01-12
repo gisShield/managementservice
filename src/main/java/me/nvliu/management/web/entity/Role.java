@@ -1,5 +1,7 @@
 package me.nvliu.management.web.entity;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.List;
 
@@ -12,6 +14,7 @@ public class Role implements Serializable {
     /**
      * 角色名
      */
+    @NotNull(message = "角色名不能为空")
     private String roleName;
     /**
      * 绑定的菜单

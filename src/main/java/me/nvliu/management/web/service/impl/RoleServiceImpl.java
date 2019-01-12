@@ -4,6 +4,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import me.nvliu.management.utils.Tools;
 import me.nvliu.management.web.dao.RoleMapper;
+import me.nvliu.management.web.entity.Result;
 import me.nvliu.management.web.entity.Role;
 import me.nvliu.management.web.entity.RoleMenu;
 import me.nvliu.management.web.service.RoleService;
@@ -18,28 +19,31 @@ public class RoleServiceImpl implements RoleService{
     RoleMapper roleMapper;
 
     @Override
-    public Role getRoleById(Integer id) {
-        Role role = null;
-        if(Tools.notEmpty(id)){
-            role = roleMapper.selectByPrimaryKey(id);
-        }
-        return role;
-    }
-
-    @Override
-    public List<Role> getRoleList(Role role) {
-        List<Role> roles = null;
+    public Result getRoleById(Integer id) {
+        Role role = roleMapper.selectByPrimaryKey(id);
         if(Tools.notEmpty(role)){
-            roles = roleMapper.getRoleList(role);
+            return new Result(role, Result.ErrorCode.SUCCESS_OPTION);
+        }else{
+            return new Result( Result.ErrorCode.FAIL_OPTION);
         }
-        return roles;
+
     }
 
     @Override
-    public PageInfo<Role> getRolePage(Role role, int pageNumber, int pageSize) {
+    public Result getRoleList(Role role) {
+        List<Role> roles = roleMapper.getRoleList(role);
+        if(!roles.isEmpty()){
+            return new Result(roles, Result.ErrorCode.SUCCESS_OPTION);
+        }else{
+            return new Result( Result.ErrorCode.FAIL_OPTION);
+        }
+    }
+
+    @Override
+    public Result getRolePage(String roleName, int pageNumber, int pageSize) {
         int p = 1;
         int s = 10;
-        PageInfo<Role> rolePageInfo = null;
+        Role role = new Role();
         if(Tools.notEmpty(pageNumber)){
             p = pageNumber;
 
@@ -48,37 +52,60 @@ public class RoleServiceImpl implements RoleService{
             s = pageSize;
 
         }
-        if(Tools.notEmpty(role)){
-            PageHelper.startPage(p,s);
-            rolePageInfo = new PageInfo<>(roleMapper.getRoleList(role));
+        if(Tools.notEmpty(roleName)){
+
+            role.setRoleName(roleName);
+
         }
-        return rolePageInfo;
+        PageHelper.startPage(p,s);
+        PageInfo<Role> rolePageInfo = new PageInfo<>(roleMapper.getRoleList(role));
+        return new Result(rolePageInfo, Result.ErrorCode.SUCCESS_OPTION);
     }
 
     @Override
-    public int saveRole(Role role) {
-        return roleMapper.insertSelective(role);
+    public Result saveRole(Role role) {
+        int res =  roleMapper.insertSelective(role);
+        if(res >0){
+            return new Result(Result.ErrorCode.SUCCESS_OPTION);
+        }else {
+            return new Result( Result.ErrorCode.FAIL_OPTION);
+
+        }
+
     }
 
     @Override
-    public int deleteRole(Integer id) {
-        return roleMapper.deleteByPrimaryKey(id);
+    public Result deleteRole(Integer id) {
+        int res =  roleMapper.deleteByPrimaryKey(id);
+        if(res >0){
+            return new Result(Result.ErrorCode.SUCCESS_OPTION);
+        }else {
+            return new Result( Result.ErrorCode.FAIL_OPTION);
+
+        }
     }
 
     @Override
-    public int updadteRole(Role role) {
-        if(Tools.notEmpty(role) && Tools.notEmpty(role.getId())){
-            return  roleMapper.updateByPrimaryKeySelective(role);
+    public Result updadteRole(int id,Role role) {
+        if(Tools.notEmpty(role) && Tools.notEmpty(id)){
+            role.setId(id);
+            int res =  roleMapper.updateByPrimaryKeySelective(role);
+            if(res >0){
+                return new Result(Result.ErrorCode.SUCCESS_OPTION);
+            }else {
+                return new Result( Result.ErrorCode.FAIL_OPTION);
+            }
         }else{
-            return -1;
+            return new Result( Result.ErrorCode.BAD_REQUEST);
         }
     }
 
     @Override
-    public int updateRoleMenu(Role role, String menuIds) {
-        int j = 0;
-        if(Tools.notEmpty(role) && Tools.notEmpty(menuIds)){
+    public Result updateRoleMenu(int id, String menuIds) {
+        if(Tools.notEmpty(id) && Tools.notEmpty(menuIds)){
             //清除之前绑定的关联记录
+            Role role = new Role();
+            role.setId(id);
             roleMapper.removeRoleMenu(role);
             // 新增角色菜单关联
             String[] newMenuIds = menuIds.split(",");
@@ -86,9 +113,9 @@ public class RoleServiceImpl implements RoleService{
             for(int i=0;i<newMenuIds.length;i++){
                 RoleMenu roleMenu= new RoleMenu(role.getId(),Integer.parseInt(newMenuIds[i]));
                 roleMapper.addRoleMenu(roleMenu);
-                j++;
             }
+            return new Result(Result.ErrorCode.SUCCESS_OPTION);
         }
-        return j;
+        return new Result( Result.ErrorCode.BAD_REQUEST);
     }
 }

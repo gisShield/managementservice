@@ -53,4 +53,6 @@ public interface UserMapper {
 
     public int addUserRole(UserRole userRole);
 
+    public int updatePasswordByPrimaryKeySelective(User user);
+
 }

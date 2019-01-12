@@ -3,7 +3,9 @@ package me.nvliu.management.web.entity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import javax.validation.constraints.NotNull;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 public class User implements UserDetails {
@@ -14,10 +16,12 @@ public class User implements UserDetails {
     /**
      * 用户名
      */
+    @NotNull(message = "用户名不能为空")
     private String userName;
     /**
      * 密码
      */
+    @NotNull(message = "密码不能为空")
     private String password;
     /**
      * 绑定的角色
@@ -28,6 +32,15 @@ public class User implements UserDetails {
      */
     private int unusable;
     private List<? extends GrantedAuthority> authorities;
+    private Date lastPasswordResetDate;
+
+    public Date getLastPasswordResetDate() {
+        return lastPasswordResetDate;
+    }
+
+    public void setLastPasswordResetDate(Date lastPasswordResetDate) {
+        this.lastPasswordResetDate = lastPasswordResetDate;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

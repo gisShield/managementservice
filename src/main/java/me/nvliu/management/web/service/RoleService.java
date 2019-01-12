@@ -1,9 +1,8 @@
 package me.nvliu.management.web.service;
 
-import com.github.pagehelper.PageInfo;
+import me.nvliu.management.web.entity.Result;
 import me.nvliu.management.web.entity.Role;
 
-import java.util.List;
 
 public interface RoleService {
     /**
@@ -11,7 +10,7 @@ public interface RoleService {
      * @param id
      * @return
      */
-    Role getRoleById(Integer id);
+    Result getRoleById(Integer id);
 
 
     /**
@@ -19,42 +18,44 @@ public interface RoleService {
      * @param role
      * @return
      */
-    List<Role> getRoleList(Role role);
+    Result getRoleList(Role role);
 
     /**
      * 获取角色分页信息
-     * @param role
-     * @param pageNumber
-     * @param pageSize
+     * @param roleName 角色名
+     * @param pageNumber 当前页码
+     * @param pageSize 页面条数
      * @return
      */
-    PageInfo<Role> getRolePage(Role role, int pageNumber, int pageSize);
+    Result getRolePage(String roleName, int pageNumber, int pageSize);
 
     /**
      * 保存角色信息
-     * @param role
+     * @param role 角色内容
      * @return
      */
-    int saveRole(Role role);
+    Result saveRole(Role role);
 
     /**
      * 删除角色信息
-     * @param id
+     * @param id 角色id
      * @return
      */
-    int deleteRole(Integer id);
+    Result deleteRole(Integer id);
 
     /**
      * 更新角色信息
-     * @param role
+     * @param id 角色id
+     * @param role 角色新的信息
      * @return
      */
-    int updadteRole(Role role);
+    Result updadteRole(int id,Role role);
 
     /**
      * 修改角色菜单
-     * @param role
+     * @param id 角色 id
+     * @param menuIds 菜单id串
      * @return
      */
-    int updateRoleMenu(Role role,String menuIds);
+    Result updateRoleMenu(int id,String menuIds);
 }

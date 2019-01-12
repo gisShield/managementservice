@@ -4,10 +4,12 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import me.nvliu.management.utils.Tools;
 import me.nvliu.management.web.dao.UserMapper;
+import me.nvliu.management.web.entity.Result;
 import me.nvliu.management.web.entity.User;
 import me.nvliu.management.web.entity.UserRole;
 import me.nvliu.management.web.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,34 +21,31 @@ public class UserServiceImpl implements UserService {
     private  UserMapper userMapper;
 
     @Override
-    public User getUserById(Integer id) {
-        User user= null;
-        if(Tools.notEmpty(id)){
-            user = userMapper.selectByPrimaryKey(id);
-        }
-        return user;
+    public Result getUserById(Integer id) {
+        User user = userMapper.selectByPrimaryKey(id);
+        return new Result(user, Result.ErrorCode.SUCCESS_OPTION);
     }
 
     @Override
     public User getUserByName(String userName) {
-        if(Tools.isEmpty(userName)){
-            return null;
-        }
-        return userMapper.findByUserName(userName);
+        User user =  userMapper.findByUserName(userName);
+        return user;
 
     }
 
     @Override
-    public List<User> getUserList(User user) {
-        List<User> list = null;
+    public Result getUserList(User user) {
         if (Tools.notEmpty(user)){
-            list =  userMapper.getUserList(user);
+            List<User> list =  userMapper.getUserList(user);
+            return new Result(list, Result.ErrorCode.SUCCESS_OPTION);
+        }else {
+            return new Result(Result.ErrorCode.BAD_REQUEST);
         }
-        return list;
+
     }
 
     @Override
-    public PageInfo<User> getUserPage(User user, int pageNumber, int pageSize) {
+    public Result getUserPage(String userName, int pageNumber, int pageSize) {
         PageInfo<User> pageInfo = null;
         int p = 0;
         int s = 10;
@@ -56,44 +55,90 @@ public class UserServiceImpl implements UserService {
         if (Tools.notEmpty(pageSize)) {
             s = pageSize;
         }
-        if (Tools.notEmpty(user)){
-            PageHelper.startPage(p,s);
-            pageInfo = new PageInfo<>(userMapper.getUserList(user));
+        User user = new User();
+        if(Tools.notEmpty(userName)){
+            user.setUserName(userName);
         }
-        return pageInfo;
+        PageHelper.startPage(p,s);
+        pageInfo = new PageInfo<>(userMapper.getUserList(user));
+        return new Result(pageInfo, Result.ErrorCode.SUCCESS_OPTION);
     }
 
     @Override
-    public int saveUser(User user) {
-
-        return userMapper.insertSelective(user);
-    }
-
-    @Override
-    public int deleteUser(Integer id) {
-        if(Tools.notEmpty(id)){
-            return userMapper.deleteByPrimaryKey(id);
-        }else{
-            return -1;
-        }
-
-    }
-
-    @Override
-    public int updadteUser(User user) {
-        if(Tools.notEmpty(user) && Tools.notEmpty(user.getId())){
-            return userMapper.updateByPrimaryKeySelective(user);
+    public Result saveUser(User user) {
+        String pwd = BCrypt.hashpw(user.getPassword(), BCrypt.gensalt());
+        user.setPassword(pwd);
+        int res = userMapper.insertSelective(user);
+        if(res>0){
+            return new Result(Result.ErrorCode.SUCCESS_OPTION);
         }else {
-            return -1;
+            return new Result(Result.ErrorCode.FAIL_OPTION);
+        }
+
+
+
+    }
+
+    @Override
+    public Result deleteUser(Integer id) {
+        if(Tools.notEmpty(id)){
+            int res =  userMapper.deleteByPrimaryKey(id);
+            if(res >0 ){
+                return new Result(Result.ErrorCode.SUCCESS_OPTION);
+            }else{
+                return new Result(Result.ErrorCode.FAIL_OPTION);
+            }
+        }else{
+            return new Result(Result.ErrorCode.BAD_REQUEST);
         }
 
     }
 
     @Override
-    public int updateUserRole(User user,String roleIds) {
-        int j = 0;
-        if(Tools.notEmpty(user) && Tools.notEmpty(roleIds)){
+    public Result updadteUser(int id,User user) {
+        if(Tools.notEmpty(user) && Tools.notEmpty(id)){
+            user.setId(id);
+            int res =  userMapper.updateByPrimaryKeySelective(user);
+            if(res >0){
+                return new Result(Result.ErrorCode.SUCCESS_OPTION);
+            }else{
+                return new Result(Result.ErrorCode.FAIL_OPTION);
+            }
+        }else {
+            return new Result(Result.ErrorCode.BAD_REQUEST);
+        }
+
+    }
+
+    @Override
+    public Result updateUserPassword(String userName,String opwd,String npwd) {
+        User u = userMapper.findByUserName(userName);
+        if(Tools.notEmpty(u)){
+            if(BCrypt.checkpw(opwd,u.getPassword())){
+                // 密码验证正确
+                String newPwd = BCrypt.hashpw(npwd, BCrypt.gensalt());
+                u.setPassword(newPwd);
+                int res =  userMapper.updatePasswordByPrimaryKeySelective(u);
+                if(res >0){
+                    return new Result(Result.ErrorCode.EDITPWD_SUCCESS);
+                }else {
+                    return new Result(Result.ErrorCode.FAIL_OPTION);
+                }
+            }else{
+                return new Result(Result.ErrorCode.INVALID_PASSWORD);
+            }
+
+        }else{
+            return new Result(Result.ErrorCode.BAD_REQUEST);
+        }
+    }
+
+    @Override
+    public Result updateUserRole(int id,String roleIds) {
+        if(Tools.notEmpty(id) && Tools.notEmpty(roleIds)){
             //清除之前绑定的关联记录
+            User user = new User();
+            user.setId(id);
             userMapper.removeUserRole(user);
             // 新增用户角色关联
             String[] newRoleIds = roleIds.split(",");
@@ -101,9 +146,11 @@ public class UserServiceImpl implements UserService {
             for(int i=0;i<newRoleIds.length;i++){
                 UserRole userRole= new UserRole(user.getId(),Integer.parseInt(newRoleIds[i]));
                 userMapper.addUserRole(userRole);
-                j++;
             }
+            return new Result(Result.ErrorCode.SUCCESS_OPTION);
+        }else{
+            return new Result(Result.ErrorCode.BAD_REQUEST);
         }
-        return j;
+
     }
 }

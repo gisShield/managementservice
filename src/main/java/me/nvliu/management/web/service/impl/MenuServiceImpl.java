@@ -5,6 +5,7 @@ import com.github.pagehelper.PageInfo;
 import me.nvliu.management.utils.Tools;
 import me.nvliu.management.web.dao.MenuMapper;
 import me.nvliu.management.web.entity.Menu;
+import me.nvliu.management.web.entity.Result;
 import me.nvliu.management.web.service.MenuService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,23 +19,25 @@ public class MenuServiceImpl implements MenuService {
     private MenuMapper menuMapper;
 
     @Override
-    public Menu getMenuById(Integer id) {
-        Menu menu = null;
-        if(Tools.notEmpty(id)){
-            menu = menuMapper.selectByPrimaryKey(id);
+    public Result getMenuById(Integer id) {
+        Menu menu = menuMapper.selectByPrimaryKey(id);
+        if(Tools.notEmpty(menu)){
+            return new Result(menu, Result.ErrorCode.SUCCESS_OPTION);
         }
-        return menu;
+        return new Result( Result.ErrorCode.FAIL_OPTION);
     }
 
     @Override
-    public List<Menu> getMenuList(Menu menu) {
-
-        return menuMapper.getMenuList(menu);
+    public Result getMenuList(Menu menu) {
+        List<Menu> menus = menuMapper.getMenuList(menu);
+        if(!menus.isEmpty()){
+            return new Result(menus, Result.ErrorCode.SUCCESS_OPTION);
+        }
+        return new Result( Result.ErrorCode.FAIL_OPTION);
     }
 
     @Override
-    public PageInfo<Menu> getMenuPage(Menu menu, int pageNumber, int pageSize) {
-        PageInfo<Menu> menuPageInfo = null ;
+    public Result getMenuPage(Menu menu, int pageNumber, int pageSize) {
         int p = 1;
         int s = 10;
         if(Tools.notEmpty(pageNumber)){
@@ -44,29 +47,48 @@ public class MenuServiceImpl implements MenuService {
         if(Tools.notEmpty(pageSize)){
             s = pageSize;
         }
-        if(Tools.notEmpty(menu)){
-            PageHelper.startPage(p,s);
-            menuPageInfo = new PageInfo<>(menuMapper.getMenuList(menu));
-        }
-        return menuPageInfo;
+        PageHelper.startPage(p,s);
+        PageInfo<Menu> menuPageInfo = new PageInfo<>(menuMapper.getMenuList(menu));
+
+        return new Result(menuPageInfo, Result.ErrorCode.SUCCESS_OPTION);
     }
 
     @Override
-    public int saveMenu(Menu menu) {
-        return menuMapper.insertSelective(menu);
-    }
-
-    @Override
-    public int deleteMenu(Integer id) {
-        return menuMapper.deleteByPrimaryKey(id);
-    }
-
-    @Override
-    public int updadteMenu(Menu menu) {
-        if(Tools.notEmpty(menu) && Tools.notEmpty(menu.getId())){
-            return menuMapper.updateByPrimaryKeySelective(menu);
+    public Result saveMenu(Menu menu) {
+        int res =  menuMapper.insertSelective(menu);
+        if(res > 0){
+            return new Result(Result.ErrorCode.SUCCESS_OPTION);
         }else{
-            return -1;
+            return new Result(Result.ErrorCode.FAIL_OPTION);
         }
+    }
+
+    @Override
+    public Result deleteMenu(Integer id) {
+        int res =  menuMapper.deleteByPrimaryKey(id);
+        if(res >0 ){
+            return new Result(Result.ErrorCode.SUCCESS_OPTION);
+        }else{
+            return new Result(Result.ErrorCode.FAIL_OPTION);
+        }
+    }
+
+    @Override
+    public Result updadteMenu(Integer id,Menu menu) {
+        if(Tools.notEmpty(menu) && Tools.notEmpty(id)){
+            menu.setId(id);
+            int res= menuMapper.updateByPrimaryKeySelective(menu);
+            if(res >0){
+                return new Result(Result.ErrorCode.SUCCESS_OPTION);
+            }else{
+                return new Result(Result.ErrorCode.FAIL_OPTION);
+            }
+        }else{
+            return new Result(Result.ErrorCode.BAD_REQUEST);        }
+    }
+
+    @Override
+    public List<Menu> getMenuByUserId(Integer id) {
+        return menuMapper.getByUserId(id);
     }
 }

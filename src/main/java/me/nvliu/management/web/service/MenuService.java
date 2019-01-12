@@ -2,6 +2,7 @@ package me.nvliu.management.web.service;
 
 import com.github.pagehelper.PageInfo;
 import me.nvliu.management.web.entity.Menu;
+import me.nvliu.management.web.entity.Result;
 
 import java.util.List;
 
@@ -11,7 +12,7 @@ public interface MenuService {
      * @param id
      * @return
      */
-    Menu getMenuById(Integer id);
+    Result getMenuById(Integer id);
 
 
     /**
@@ -19,7 +20,7 @@ public interface MenuService {
      * @param menu
      * @return
      */
-    List<Menu> getMenuList(Menu menu);
+    Result getMenuList(Menu menu);
 
     /**
      * 获取菜单分页信息
@@ -28,27 +29,34 @@ public interface MenuService {
      * @param pageSize
      * @return
      */
-    PageInfo<Menu> getMenuPage(Menu menu, int pageNumber, int pageSize);
+    Result getMenuPage(Menu menu, int pageNumber, int pageSize);
 
     /**
      * 保存菜单信息
      * @param menu
      * @return
      */
-    int saveMenu(Menu menu);
+    Result saveMenu(Menu menu);
 
     /**
      * 删除菜单信息
      * @param id
      * @return
      */
-    int deleteMenu(Integer id);
+    Result deleteMenu(Integer id);
 
     /**
      * 更新菜单信息
      * @param menu
      * @return
      */
-    int updadteMenu(Menu menu);
+    Result updadteMenu(Integer id,Menu menu);
+
+    /**
+     * 通过用户Id获取菜单列表
+     * @param id
+     * @return
+     */
+    List<Menu> getMenuByUserId(Integer id);
 
 }
