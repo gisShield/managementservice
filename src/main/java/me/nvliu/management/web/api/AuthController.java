@@ -3,7 +3,6 @@ package me.nvliu.management.web.api;
 import me.nvliu.management.utils.Tools;
 import me.nvliu.management.web.entity.Menu;
 import me.nvliu.management.web.entity.MenuTree;
-import me.nvliu.management.web.entity.Result;
 import me.nvliu.management.web.entity.User;
 import me.nvliu.management.web.security.JwtAuthenticationResponse;
 import me.nvliu.management.web.service.AuthService;
@@ -25,6 +24,8 @@ import java.util.List;
 public class AuthController {
     @Value("${jwt.header}")
     private String tokenHeader;
+    @Value("${jwt.tokenHead}")
+    private String tokenHead;
 
     @Autowired
     private AuthService authService;
@@ -43,7 +44,7 @@ public class AuthController {
             if(Tools.notEmpty(user)){
                 List<Menu> permissions = menuService.getMenuByUserId(user.getId());
                 MenuTree menuTree = new MenuTree();
-                return ResponseEntity.ok(new JwtAuthenticationResponse(token,String.valueOf(user.getId()), menuTree.menuList(permissions),authenticationRequest.getUsername()));
+                return ResponseEntity.ok(new JwtAuthenticationResponse(tokenHead + token,String.valueOf(user.getId()), menuTree.menuList(permissions),authenticationRequest.getUsername()));
             }
 
         }

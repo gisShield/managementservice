@@ -8,6 +8,7 @@ import me.nvliu.management.web.entity.Result;
 import me.nvliu.management.web.entity.User;
 import me.nvliu.management.web.entity.UserRole;
 import me.nvliu.management.web.service.UserService;
+import me.nvliu.management.web.vo.UserVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
@@ -36,7 +37,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public Result getUserList(User user) {
         if (Tools.notEmpty(user)){
-            List<User> list =  userMapper.getUserList(user);
+            List<UserVo> list =  userMapper.getUserList(user);
             return new Result(list, Result.ErrorCode.SUCCESS_OPTION);
         }else {
             return new Result(Result.ErrorCode.BAD_REQUEST);
@@ -46,7 +47,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Result getUserPage(String userName, int pageNumber, int pageSize) {
-        PageInfo<User> pageInfo = null;
+        PageInfo<UserVo> pageInfo = null;
         int p = 0;
         int s = 10;
         if(Tools.notEmpty(pageNumber)) {

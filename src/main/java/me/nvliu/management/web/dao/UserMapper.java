@@ -2,6 +2,7 @@ package me.nvliu.management.web.dao;
 
 import me.nvliu.management.web.entity.User;
 import me.nvliu.management.web.entity.UserRole;
+import me.nvliu.management.web.vo.UserVo;
 
 import java.util.List;
 import java.util.Map;
@@ -47,7 +48,7 @@ public interface UserMapper {
      */
     public User findByUserName(String username);
 
-    public List<User> getUserList(User user);
+    public List<UserVo> getUserList(User user);
 
     public int removeUserRole(User user);
 
