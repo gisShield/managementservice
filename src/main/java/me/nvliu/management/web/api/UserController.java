@@ -9,11 +9,8 @@ import me.nvliu.management.web.service.MenuService;
 import me.nvliu.management.web.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.validation.Errors;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.util.List;
 
 
@@ -30,34 +27,24 @@ public class UserController extends BaseController {
 
     @PostMapping("/save")
     @ResponseStatus(HttpStatus.CREATED)
-   public Result<Object> saveUser(@Valid @RequestBody User user, Errors errors){
-        List<ObjectError> oes = errors.getAllErrors();
-        if(oes.size() == 0){
-            return userService.saveUser(user);
-        }
-        return new Result<>(Result.ErrorCode.BAD_REQUEST);
+   public Result<Object> saveUser(User user){
+        return userService.saveUser(user);
    }
+
    @PutMapping("/update")
    @ResponseStatus(HttpStatus.CREATED)
-   public Result<Object> updateUser(@PathVariable("id") Integer id,@Valid @RequestBody User user,Errors errors){
-       List<ObjectError> oes = errors.getAllErrors();
-       if(oes.size() == 0 ){
-           return userService.updadteUser(id,user);
-       }
-       return new Result<>(Result.ErrorCode.BAD_REQUEST);
+   public Result<Object> updateUser(User user){
+       return userService.updadteUser(user);
    }
     @PutMapping("/updatepwd")
     @ResponseStatus(HttpStatus.CREATED)
-    public Result<Object> updateUserPassword(@PathVariable("opwd") String opwd,@PathVariable("npwd") String npwd,Errors errors){
-        List<ObjectError> oes = errors.getAllErrors();
-        if(oes.size() == 0 ){
-            return userService.updateUserPassword(this.getSessionUserName(),opwd,npwd);
-        }
-        return new Result<>(Result.ErrorCode.BAD_REQUEST);
+    public Result<Object> updateUserPassword(@RequestParam(value = "opwd") String opwd,
+                                             @RequestParam(value = "npwd") String npwd){
+        return userService.updateUserPassword(this.getSessionUserName(),opwd,npwd);
     }
-   @DeleteMapping("/remove")
-   @ResponseStatus(HttpStatus.NO_CONTENT)
-   public Result<Object> deleteUser(@PathVariable("id") Integer id){
+   @PostMapping("/remove")
+   @ResponseStatus(HttpStatus.OK)
+   public Result<Object> deleteUser(@RequestParam Integer id){
        return userService.deleteUser(id);
    }
 
@@ -72,10 +59,7 @@ public class UserController extends BaseController {
    @ResponseStatus(HttpStatus.CREATED)
    public Result<Object> addUserRole(@RequestParam( value =  "id") Integer id,
                                      @RequestParam(value = "roleIds") String roleIds){
-//       return  userService.updateUserRole(id,roleIds);
-       System.out.println(id);
-       System.out.println(roleIds);
-       return new Result<>(Result.ErrorCode.SUCCESS_OPTION);
+       return  userService.updateUserRole(id,roleIds);
    }
     @GetMapping("/userMenu")
     @ResponseStatus(HttpStatus.OK)
@@ -84,7 +68,4 @@ public class UserController extends BaseController {
         MenuTree menuTree = new MenuTree();
         return new Result<>(menuTree.menuList(permissions),Result.ErrorCode.SUCCESS_OPTION);
     }
-
-
-
 }

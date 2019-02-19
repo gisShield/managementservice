@@ -51,11 +51,10 @@ public interface UserService {
 
     /**
      * 更新用户信息
-     * @param id 用户id
      * @param user 更新的用户信息
      * @return
      */
-    Result updadteUser(int id,User user);
+    Result updadteUser(User user);
 
     /**
      * 修改当前用户密码

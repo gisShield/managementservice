@@ -16,12 +16,10 @@ public class User implements UserDetails {
     /**
      * 用户名
      */
-    @NotNull(message = "用户名不能为空")
     private String userName;
     /**
      * 密码
      */
-    @NotNull(message = "密码不能为空")
     private String password;
     /**
      * 绑定的角色
@@ -31,6 +29,10 @@ public class User implements UserDetails {
      * 是否可用
      */
     private int unusable;
+    /**
+     * email地址
+     */
+    private String email;
     private List<? extends GrantedAuthority> authorities;
     private Date lastPasswordResetDate;
 
@@ -116,6 +118,14 @@ public class User implements UserDetails {
 
     public void setUnusable(int unusable) {
         this.unusable = unusable;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     @Override

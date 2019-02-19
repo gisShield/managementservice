@@ -8,7 +8,6 @@ public class Menu implements Serializable {
     /**
      * 父级菜单
      */
-    @NotNull(message = "父级菜单不能为空")
     private Integer parentId;
     /**
      * 菜单图标
@@ -42,7 +41,6 @@ public class Menu implements Serializable {
      *
      * @mbg.generated
      */
-    @NotNull(message = "菜单名不能为空")
     private String name;
 
     /**

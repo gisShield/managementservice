@@ -8,6 +8,7 @@ import me.nvliu.management.web.entity.Result;
 import me.nvliu.management.web.entity.Role;
 import me.nvliu.management.web.entity.RoleMenu;
 import me.nvliu.management.web.service.RoleService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -41,29 +42,18 @@ public class RoleServiceImpl implements RoleService{
 
     @Override
     public Result getRolePage(String roleName, int pageNumber, int pageSize) {
-        int p = 1;
-        int s = 10;
         Role role = new Role();
-        if(Tools.notEmpty(pageNumber)){
-            p = pageNumber;
-
-        }
-        if(Tools.notEmpty(pageSize)){
-            s = pageSize;
-
-        }
         if(Tools.notEmpty(roleName)){
-
             role.setRoleName(roleName);
-
         }
-        PageHelper.startPage(p,s);
+        PageHelper.startPage(pageNumber,pageSize);
         PageInfo<Role> rolePageInfo = new PageInfo<>(roleMapper.getRoleList(role));
         return new Result(rolePageInfo, Result.ErrorCode.SUCCESS_OPTION);
     }
 
     @Override
     public Result saveRole(Role role) {
+        if (StringUtils.isBlank(role.getRoleName())) return new Result( Result.ErrorCode.FAIL_OPTION);
         int res =  roleMapper.insertSelective(role);
         if(res >0){
             return new Result(Result.ErrorCode.SUCCESS_OPTION);
@@ -81,14 +71,12 @@ public class RoleServiceImpl implements RoleService{
             return new Result(Result.ErrorCode.SUCCESS_OPTION);
         }else {
             return new Result( Result.ErrorCode.FAIL_OPTION);
-
         }
     }
 
     @Override
-    public Result updadteRole(int id,Role role) {
-        if(Tools.notEmpty(role) && Tools.notEmpty(id)){
-            role.setId(id);
+    public Result updadteRole(Role role) {
+        if(Tools.notEmpty(role) && Tools.notEmpty(role.getId())){
             int res =  roleMapper.updateByPrimaryKeySelective(role);
             if(res >0){
                 return new Result(Result.ErrorCode.SUCCESS_OPTION);

@@ -29,7 +29,7 @@ public interface MenuService {
      * @param pageSize
      * @return
      */
-    Result getMenuPage(Menu menu, int pageNumber, int pageSize);
+    Result getMenuPage(String name,Integer parentId, int pageNumber, int pageSize);
 
     /**
      * 保存菜单信息
@@ -50,7 +50,7 @@ public interface MenuService {
      * @param menu
      * @return
      */
-    Result updadteMenu(Integer id,Menu menu);
+    Result updadteMenu(Menu menu);
 
     /**
      * 通过用户Id获取菜单列表

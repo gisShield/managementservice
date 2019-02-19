@@ -47,21 +47,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Result getUserPage(String userName, int pageNumber, int pageSize) {
-        PageInfo<UserVo> pageInfo = null;
-        int p = 0;
-        int s = 10;
-        if(Tools.notEmpty(pageNumber)) {
-            p = pageNumber;
-        }
-        if (Tools.notEmpty(pageSize)) {
-            s = pageSize;
-        }
         User user = new User();
         if(Tools.notEmpty(userName)){
             user.setUserName(userName);
         }
-        PageHelper.startPage(p,s);
-        pageInfo = new PageInfo<>(userMapper.getUserList(user));
+        PageHelper.startPage(pageNumber,pageSize);
+        PageInfo<UserVo> pageInfo = new PageInfo<>(userMapper.getUserList(user));
         return new Result(pageInfo, Result.ErrorCode.SUCCESS_OPTION);
     }
 
@@ -96,9 +87,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Result updadteUser(int id,User user) {
-        if(Tools.notEmpty(user) && Tools.notEmpty(id)){
-            user.setId(id);
+    public Result updadteUser(User user) {
+        if(Tools.notEmpty(user) && Tools.notEmpty(user.getId())){
             int res =  userMapper.updateByPrimaryKeySelective(user);
             if(res >0){
                 return new Result(Result.ErrorCode.SUCCESS_OPTION);

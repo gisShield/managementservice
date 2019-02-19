@@ -9,6 +9,7 @@ public class UserVo implements Serializable{
     private Integer id;
     private String name;
     private int unusable;
+    private String email;
 
     public Integer getId() {
         return id;
@@ -32,5 +33,13 @@ public class UserVo implements Serializable{
 
     public void setUnusable(int unusable) {
         this.unusable = unusable;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

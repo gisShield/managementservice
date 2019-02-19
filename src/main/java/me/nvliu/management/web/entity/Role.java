@@ -14,8 +14,7 @@ public class Role implements Serializable {
     /**
      * 角色名
      */
-    @NotNull(message = "角色名不能为空")
-    private String roleName;
+        private String roleName;
     /**
      * 绑定的菜单
      */

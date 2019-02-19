@@ -6,55 +6,47 @@ import me.nvliu.management.web.entity.Role;
 import me.nvliu.management.web.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.validation.Errors;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
-import java.util.List;
 
 /**
  * 角色
  * @author mvp
  */
 @RestController
+@RequestMapping(value = "/role")
 public class RoleController extends BaseController {
 
     @Autowired
     private RoleService roleService;
 
-    @PostMapping("/role")
+    @PostMapping("/save")
     @ResponseStatus(HttpStatus.CREATED)
-    public Result<Object> saveRole(@Valid @RequestBody Role role, Errors errors){
-        List<ObjectError> oes = errors.getAllErrors();
-        if(oes.size() == 0 ){
-            return roleService.saveRole(role);
-        }
-        return new Result<>(Result.ErrorCode.BAD_REQUEST);
+    public Result<Object> saveRole(Role role){
+        return roleService.saveRole(role);
     }
-    @PutMapping("/role/{id}")
-    @ResponseStatus(HttpStatus.CREATED)
-    public Result<Object> updateRole(@PathVariable Integer id, @RequestBody Role role, Errors errors){
-        List<ObjectError> oes = errors.getAllErrors();
-        if(oes.size()  == 0 ){
 
-            return roleService.updadteRole(id,role);
-        }
-        return new Result<>(Result.ErrorCode.BAD_REQUEST);
+    @PutMapping("/update")
+    @ResponseStatus(HttpStatus.CREATED)
+    public Result<Object> updateRole(Role role){
+        return roleService.updadteRole(role);
     }
-    @DeleteMapping("/role/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public Result<Object> deleteRole(@PathVariable Integer id){
+    @PostMapping("/remove")
+    @ResponseStatus(HttpStatus.OK)
+    public Result<Object> deleteRole(@RequestParam(value = "id") Integer id){
         return roleService.deleteRole(id);
     }
-    @GetMapping("/role/{roleName}/{pageNum}/{pageSize}")
+    @GetMapping("/page")
     @ResponseStatus(HttpStatus.OK)
-    public Result<Object> getRolePage(@PathVariable String  roleName,@PathVariable Integer  pageNum,@PathVariable Integer  pageSize){
+    public Result<Object> getRolePage(@RequestParam(value = "roleName",required = false) String  roleName,
+                                      @RequestParam(value = "pageNum" ,defaultValue = "1") Integer  pageNum,
+                                      @RequestParam(value = "pageSize" ,defaultValue = "10")  Integer  pageSize){
         return roleService.getRolePage(roleName,pageNum,pageSize);
     }
-    @PostMapping("/role/menu/{id}/{menuIds}")
+    @PostMapping("/roleMenu")
     @ResponseStatus(HttpStatus.CREATED)
-    public Result<Object> addRoleMenu(@PathVariable Integer id,@PathVariable String menuIds){
+    public Result<Object> addRoleMenu(@RequestParam(value = "id") Integer id,
+                                      @RequestParam(value = "menuIds") String menuIds){
 
         return roleService.updateRoleMenu(id,menuIds);
     }

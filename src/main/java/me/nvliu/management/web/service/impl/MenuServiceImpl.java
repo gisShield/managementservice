@@ -7,6 +7,7 @@ import me.nvliu.management.web.dao.MenuMapper;
 import me.nvliu.management.web.entity.Menu;
 import me.nvliu.management.web.entity.Result;
 import me.nvliu.management.web.service.MenuService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -37,17 +38,15 @@ public class MenuServiceImpl implements MenuService {
     }
 
     @Override
-    public Result getMenuPage(Menu menu, int pageNumber, int pageSize) {
-        int p = 1;
-        int s = 10;
-        if(Tools.notEmpty(pageNumber)){
-            p = pageNumber;
-
+    public Result getMenuPage(String name,Integer parentId, int pageNumber, int pageSize) {
+        Menu menu = new Menu();
+        if(StringUtils.isNotBlank(name)){
+            menu.setName(name);
         }
-        if(Tools.notEmpty(pageSize)){
-            s = pageSize;
+        if(parentId != null){
+            menu.setParentId(parentId);
         }
-        PageHelper.startPage(p,s);
+        PageHelper.startPage(pageNumber,pageSize);
         PageInfo<Menu> menuPageInfo = new PageInfo<>(menuMapper.getMenuList(menu));
 
         return new Result(menuPageInfo, Result.ErrorCode.SUCCESS_OPTION);
@@ -74,9 +73,8 @@ public class MenuServiceImpl implements MenuService {
     }
 
     @Override
-    public Result updadteMenu(Integer id,Menu menu) {
-        if(Tools.notEmpty(menu) && Tools.notEmpty(id)){
-            menu.setId(id);
+    public Result updadteMenu(Menu menu) {
+        if(Tools.notEmpty(menu) && Tools.notEmpty(menu.getId())){
             int res= menuMapper.updateByPrimaryKeySelective(menu);
             if(res >0){
                 return new Result(Result.ErrorCode.SUCCESS_OPTION);

@@ -49,7 +49,7 @@ public interface RoleService {
      * @param role 角色新的信息
      * @return
      */
-    Result updadteRole(int id,Role role);
+    Result updadteRole(Role role);
 
     /**
      * 修改角色菜单
